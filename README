@@ -6,7 +6,11 @@ A proof of concept code to make better performance than G-WAN.
 How to build and run
 ====================
 
-It requires root permission to call sched_setscheduler(2).
+It requires
+
+  - root permission to call sched_setscheduler(2).
+  - at least kernel 2.6.19 for getcpu(2)
+  - glibc 2.6 for sched_getcpu(3).
 
   # make
   # ./a.out
