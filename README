@@ -1,3 +1,189 @@
-# VW
+VW
+==
 
+A proof of concept code to make better performance than G-WAN.
+
+How to build and run
+====================
+
+It requires root permission to call sched_setscheduler(2).
+
+  # make
+  # ./a.out
+
+How to test
+===========
+
+We're using weighttp (http://redmine.lighttpd.net/projects/weighttp/wiki) for
+stress.
+
+  $ weighttp -n 1000000 -c 300 -t 4 http://127.0.0.1:8085/1b
+
+Proof of Concept
+================
+
+==> Console #1
+
+# cat /proc/cpuinfo 
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 42
+model name      : Intel(R) Core(TM) i5-2320 CPU @ 3.00GHz
+stepping        : 7
+cpu MHz         : 1600.000
+cache size      : 6144 KB
+physical id     : 0
+siblings        : 4
+core id         : 0
+cpu cores       : 4
+apicid          : 0
+initial apicid  : 0
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes xsave avx lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips        : 5986.66
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 48 bits virtual
+power management:
+
+processor       : 1
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 42
+model name      : Intel(R) Core(TM) i5-2320 CPU @ 3.00GHz
+stepping        : 7
+cpu MHz         : 1600.000
+cache size      : 6144 KB
+physical id     : 0
+siblings        : 4
+core id         : 1
+cpu cores       : 4
+apicid          : 2
+initial apicid  : 2
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes xsave avx lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips        : 5986.11
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 48 bits virtual
+power management:
+
+processor       : 2
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 42
+model name      : Intel(R) Core(TM) i5-2320 CPU @ 3.00GHz
+stepping        : 7
+cpu MHz         : 1600.000
+cache size      : 6144 KB
+physical id     : 0
+siblings        : 4
+core id         : 2
+cpu cores       : 4
+apicid          : 4
+initial apicid  : 4
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes xsave avx lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips        : 5986.12
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 48 bits virtual
+power management:
+
+processor       : 3
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 42
+model name      : Intel(R) Core(TM) i5-2320 CPU @ 3.00GHz
+stepping        : 7
+cpu MHz         : 1600.000
+cache size      : 6144 KB
+physical id     : 0
+siblings        : 4
+core id         : 3
+cpu cores       : 4
+apicid          : 6
+initial apicid  : 6
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes xsave avx lahf_lm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips        : 5986.12
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 48 bits virtual
+power management:
+
+# ./a.out 
+NWRK 3 CPU 1
+NWRK 3 CPU 2
+NWRK 4 CPU 0
+NWRK 4 CPU 3
+
+==> Console #2
+
+ 6  0      0 6044124 252060 763592    0    0     0    52 41433 89423  9 76 15  0
+ 4  0      0 6044752 252060 763600    0    0     0     0 30226 68161  8 75 17  0
+ 8  0      0 6044668 252060 763600    0    0     0     0 36786 80132 10 74 17  0
+ 6  0      0 6047320 252060 763600    0    0     0     0 21308 56197 12 84  5  0
+ 5  0      0 6047336 252060 763600    0    0     0     0 20219 53959 10 88  1  0
+ 4  0      0 6047452 252060 763600    0    0     0     0 22074 59345 10 90  0  0
+ 6  0      0 6047320 252060 763600    0    0     0     0 23281 60757 10 90  1  0
+ 5  0      0 6047204 252060 763600    0    0     0   120 20747 52709  9 91  1  0
+ 6  0      0 6047204 252060 763600    0    0     0     0 23293 58832  9 89  2  0
+ 6  0      0 6047328 252060 763600    0    0     0     0 22700 58381  9 90  1  0
+ 6  0      0 6047328 252060 763600    0    0     0     0 24146 61081 10 89  2  0
+procs -----------memory---------- ---swap-- -----io---- -system-- ----cpu----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa
+ 6  0      0 6047576 252060 763600    0    0     0     0 22059 55292  9 87  4  0
+ 3  0      0 6047452 252060 763600    0    0     0     0 23356 59088  9 87  5  0
+ 6  0      0 6047104 252060 763600    0    0     0     0 20684 53665 10 87  3  0
+ 4  0      0 6047452 252060 763600    0    0     0     0 22232 55967 10 89  2  0
+ 4  0      0 6047452 252060 763600    0    0     0     0 21676 54265  9 85  6  0
+ 5  0      0 6047328 252060 763600    0    0     0     0 21336 56106 10 89  1  0
+ 4  0      0 6047328 252060 763600    0    0     0     0 21637 57692 10 89  1  0
+ 5  0      0 6048168 252060 763600    0    0     0     0 21939 56379  9 83  8  0
+ 2  0      0 6049788 252060 763600    0    0     0     0 25466 65968  7 60 34  0
+
+==> Console #3
+
+# weighttp -k -n 10000000 -c 300 -t 4 http://127.0.0.1:8085/1b
+weighttp - a lightweight and simple webserver benchmarking tool
+
+starting benchmark...
+spawning thread #1: 75 concurrent requests, 2500000 total requests
+spawning thread #2: 75 concurrent requests, 2500000 total requests
+spawning thread #3: 75 concurrent requests, 2500000 total requests
+spawning thread #4: 75 concurrent requests, 2500000 total requests
+progress:  10% done
+progress:  20% done
+progress:  30% done
+progress:  40% done
+progress:  50% done
+progress:  60% done
+progress:  70% done
+progress:  80% done
+progress:  90% done
+progress: 100% done
+
+finished in 20 sec, 708 millisec and 724 microsec, 482888 req/s, 35839 kbyte/s
+requests: 10000000 total, 10000000 started, 10000000 done, 10000000 succeeded, 0 failed, 0 errored
+status codes: 10000000 2xx, 0 3xx, 0 4xx, 0 5xx
+traffic: 760000000 bytes total, 750000000 bytes http, 10000000 bytes data
+
+Conclusion
+==========
+
+Wow.... It's hit 482,888 req/s with 4 CPU.
 
