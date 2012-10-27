@@ -133,6 +133,11 @@ NWRK 4 CPU 3
 
 ==> Console #2
 
+This output shows result of vmstat(8) utility during this performance test was
+doing.  Numbers of `in' and `cs' are quite low due to CPU's L* caches.
+
+procs -----------memory---------- ---swap-- -----io---- -system-- ----cpu----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa
  6  0      0 6044124 252060 763592    0    0     0    52 41433 89423  9 76 15  0
  4  0      0 6044752 252060 763600    0    0     0     0 30226 68161  8 75 17  0
  8  0      0 6044668 252060 763600    0    0     0     0 36786 80132 10 74 17  0
