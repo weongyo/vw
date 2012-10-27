@@ -24,6 +24,15 @@ Proof of Concept
 
 ==> Console #1
 
+# cat /etc/lsb-release 
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=11.10
+DISTRIB_CODENAME=oneiric
+DISTRIB_DESCRIPTION="Ubuntu 11.10"
+
+# uname -a
+Linux wgj 3.0.0-26-generic #42-Ubuntu SMP Wed Sep 5 08:37:08 UTC 2012 x86_64 x86_64 x86_64 GNU/Linux
+
 # cat /proc/cpuinfo 
 processor       : 0
 vendor_id       : GenuineIntel
