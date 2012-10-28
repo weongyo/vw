@@ -1,7 +1,8 @@
 VW
 ==
 
-A proof of concept code to make better performance than G-WAN.
+A proof of concept code to make better performance than G-WAN (non-free,
+closed source).
 
 How to build and run
 ====================
@@ -18,10 +19,10 @@ It requires
 How to test
 ===========
 
-We're using weighttp (http://redmine.lighttpd.net/projects/weighttp/wiki) for
+I used weighttp (http://redmine.lighttpd.net/projects/weighttp/wiki) for
 stress.
 
-  $ weighttp -n 1000000 -c 300 -t 4 http://127.0.0.1:8085/1b
+  $ weighttp -n 10000000 -c 300 -t 4 -k http://127.0.0.1:8085/1b
 
 Proof of Concept
 ================
@@ -146,8 +147,9 @@ NWRK 4 CPU 3
 
 ==> Console #2
 
-This output shows result of vmstat(8) utility during this performance test was
-doing.  Numbers of `in' and `cs' are quite low due to CPU's L* caches.
+This output shows result of vmstat(8) utility during this performance test.
+Numbers of `in' and `cs' are quite low because OS doesn't full context
+switching; it does only `mode switch'.
 
 procs -----------memory---------- ---swap-- -----io---- -system-- ----cpu----
  r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa
