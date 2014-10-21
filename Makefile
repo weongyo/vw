@@ -1,3 +1,3 @@
 vw:
-	gcc -O2 vw.c -lpthread
+	gcc -Wall -ansi -pedantic -O3 vw.c -lpthread
 

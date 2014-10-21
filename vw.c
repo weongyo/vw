@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "vqueue.h"
 
@@ -244,9 +245,7 @@ VSS_bind(const struct vss_addr *va)
 	return (sd);
 }
 
-static const struct linger linger = {
-	.l_onoff	=	0,
-};
+static const struct linger linger = { 0, 0 };
 static int	lfd = -1;
 
 int nwrk;
@@ -286,7 +285,7 @@ CNT_Ses(struct sess *sp)
 	}
 }
 
-static int
+static void
 showMe(int no)
 {
 	int i;
@@ -324,15 +323,13 @@ static void *
 WRK_thread(void *arg)
 {
 #define	EPOLLEVENT_MAX	32
-	struct epoll_event dev = { 0 , { 0 } };
 	struct epoll_event ev[EPOLLEVENT_MAX], lev, *ep;
 	struct sesshead sh;
 	struct sess *sp;
 	struct sockaddr_storage addr_s;
 	struct sockaddr *addr;
 	socklen_t l;
-	int efd, next, errnum, i, n, r;
-	static int cnt = 0;
+	int efd, i, n, r;
 	struct sched_param p;
 	int no, need_accept;
 	cpu_set_t cpuset;
@@ -369,7 +366,7 @@ WRK_thread(void *arg)
 			if (ep->data.fd != lfd) {
 				sp = (struct sess *)ep->data.ptr;
 				assert(sp->magic == SESS_MAGIC);
-				//CNT_Session(sp);
+				/* CNT_Session(sp); */
 				CNT_Ses(sp);
 				continue;
 			}
@@ -412,7 +409,7 @@ WRK_thread(void *arg)
 			sp->sh = &sh;
 			nsp[no]++;
 			showMe(no);
-			
+
 			bzero(&lev, sizeof(lev));
 			lev.data.ptr = sp;
 			lev.events = EPOLLERR | EPOLLOUT | EPOLLIN | EPOLLPRI;
@@ -437,8 +434,7 @@ main(void)
 {
 	struct vss_addr **ta;
 	pthread_t tp;
-	socklen_t l;
-	int next, i, n, r;
+	int n;
 
 	n = VSS_resolve("127.0.0.1:8085", "http", &ta);
 	assert(n >= 0);
